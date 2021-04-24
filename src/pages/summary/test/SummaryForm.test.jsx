@@ -1,28 +1,27 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import SummaryForm from "../SummaryForm";
 
-describe("When SummaryForm is displayed", () => {
+test("Initial conditions", () => {
   render(<SummaryForm />);
-
-  const checkBox = screen.getByRole("checkbox", {
-    name: "I agree to Terms and Conditions",
+  const checkbox = screen.getByRole("checkbox", {
+    name: /terms and conditions/i,
   });
+  expect(checkbox).not.toBeChecked();
 
-  const buttonToConfirmOrder = screen.getByRole("button", {
-    name: "Confirm order",
+  const confirmButton = screen.getByRole("button", { name: /confirm order/i });
+  expect(confirmButton).toBeDisabled();
+});
+
+test("Checkbox enables button on first click and disables on second click", () => {
+  render(<SummaryForm />);
+  const checkbox = screen.getByRole("checkbox", {
+    name: /terms and conditions/i,
   });
+  const confirmButton = screen.getByRole("button", { name: /confirm order/i });
 
-  test("when checkbox is not checked", () => {
-    expect(checkBox).toBeInTheDocument();
-    expect(checkBox).not.toBeChecked();
+  fireEvent.click(checkbox);
+  expect(confirmButton).toBeEnabled();
 
-    expect(buttonToConfirmOrder).toBeInTheDocument();
-    expect(buttonToConfirmOrder).toBeDisabled();
-  });
-
-  test("when checkbox is checked", () => {
-    fireEvent.click(checkBox);
-    expect(checkBox).toBeChecked();
-    expect(buttonToConfirmOrder).toBeDisabled();
-  });
+  fireEvent.click(checkbox);
+  expect(confirmButton).toBeDisabled();
 });
